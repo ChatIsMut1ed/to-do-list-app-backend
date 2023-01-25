@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskListController;
 use Illuminate\Http\Request;
@@ -20,9 +21,17 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-// Route::resource('tasks', TaskController::class);
-Route::get('tasks', [TaskController::class, 'index'])->middleware('auth');
+//tasks
+Route::get('tasks', [TaskController::class, 'index']);
 Route::post('tasks', [TaskController::class, 'store']);
 Route::put('tasks/{id}', [TaskController::class, 'update']);
 Route::delete('tasks/{id}', [TaskController::class, 'destroy']);
-Route::resource('task-lists', TaskListController::class);
+
+//Tasks List
+Route::get('task-lists', [TaskListController::class, 'index']);
+Route::post('task-lists', [TaskListController::class, 'store']);
+Route::get('task-lists/{id}/tasks', [TaskListController::class, 'show']);
+Route::delete('task-lists/{id}', [TaskListController::class, 'destroy']);
+
+//Users
+Route::get('users', [AuthController::class, 'index']);

@@ -27,7 +27,8 @@ class StoreTaskListRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'status' => ['required', 'in:complete,pending'],
+            'status' => ['required', 'in:completed,pending'],
+            'user_id' => ['required', 'exists:users,id'],
         ];
     }
 

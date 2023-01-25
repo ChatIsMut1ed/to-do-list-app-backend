@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\TaskList;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
@@ -49,16 +51,30 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $loggedInUser = Auth::user();
+        // $loggedInUser = Auth::user();
 
+        // $tasks = Task::where('task_list_id', $request->validated()['task_list_id'])->get();
+        // $tasksCompleted = Task::where('task_list_id', $request->validated()['task_list_id'])
+        //     ->where('status', 'completed')
+        //     ->get();
+        // if ((count($tasks) === count($tasksCompleted)) && $request->validated()['status'] === 'completed') {
+        //     $taskList = TaskList::find($request->validated()['task_list_id']);
+        //     $taskList->status = $request->validated()['status'];
+        //     $taskList->save();
+        // }
         $task = Task::create([
             'name' => $request->validated()['name'],
             'description' => $request->validated()['description'],
             'due_date' => $request->validated()['due_date'],
-            'status' => $request->validated()['status'],
+            // 'status' => $request->validated()['status'],
             'task_list_id' => $request->validated()['task_list_id'],
-            'user_id' => $loggedInUser->id,
         ]);
+
+        if ($request->validated()['status'] === 'completed') {
+            $task->markAsComplete();
+        } else {
+            $task->markAsPending();
+        }
 
         return response([
             'status' => 'success',
@@ -97,10 +113,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, int $id)
     {
-        $loggedInUser = Auth::user();
 
         $task = Task::where('id', $id)->first();
-
         if (!$task) {
             return response(
                 [
@@ -115,11 +129,14 @@ class TaskController extends Controller
             'name' => $request->validated()['name'],
             'description' => $request->validated()['description'],
             'due_date' => $request->validated()['due_date'],
-            'status' => $request->validated()['status'],
-            'task_list_id' => $request->validated()['task_list_id'],
-            'user_id' => $loggedInUser->id,
+            // 'status' => $request->validated()['status'],
+            // 'task_list_id' => $request->validated()['task_list_id'],
         ]);
-
+        if ($request->validated()['status'] === 'completed') {
+            $task->markAsComplete();
+        } else {
+            $task->markAsPending();
+        }
         return response([
             'status' => 'success',
             'result' => $task
@@ -134,9 +151,11 @@ class TaskController extends Controller
      */
     public function destroy(int $id)
     {
-        $loggedInUser = Auth::user();
+        // $loggedInUser = Auth::user();
+        $loggedInUser = User::find(1);
 
         $task = Task::where('id', $id)->first();
+
         if (!$task) {
             return response(
                 [
@@ -146,8 +165,8 @@ class TaskController extends Controller
                 404
             );
         }
-
-        if ($task->user_id !== $loggedInUser->id) {
+        $taskList = TaskList::where('user_id', $loggedInUser->id)->first();
+        if ($task->task_list_id !== $taskList->id) {
             return response(
                 [
                     'status' => 'Error',
@@ -158,6 +177,7 @@ class TaskController extends Controller
         }
         $task->delete();
 
+        $taskList->updateStatus();
         return response([
             'status' => 'success',
             'result' => $id

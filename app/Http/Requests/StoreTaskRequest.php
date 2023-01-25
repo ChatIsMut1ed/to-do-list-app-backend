@@ -29,7 +29,7 @@ class StoreTaskRequest extends FormRequest
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
             'due_date' => ['required', 'date'],
-            'status' => ['required', 'in:complete,pending'],
+            'status' => ['required', 'in:completed,pending'],
             'task_list_id' => ['required', 'exists:task_lists,id'],
             // 'user_id' => ['required', 'exists:users,id'],
         ];

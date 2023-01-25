@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\TaskList;
 use App\Http\Requests\StoreTaskListRequest;
 use App\Http\Requests\UpdateTaskListRequest;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class TaskListController extends Controller
@@ -16,14 +18,8 @@ class TaskListController extends Controller
      */
     public function index()
     {
-        $loggedInUser = Auth::user();
-
-        if ($loggedInUser->role === 'admin') {
-            $taskLists = TaskList::all()->paginate(10);
-        } else {
-            $taskLists = TaskList::where('user_id', $loggedInUser->id)->get();
-        }
-
+        $taskLists = TaskList::with('tasks')->get();
+        // $taskLists = TaskList::where('user_id', $loggedInUser->id)->get();
         return response([
             'status' => 'success',
             'result' => $taskLists
@@ -48,12 +44,12 @@ class TaskListController extends Controller
      */
     public function store(StoreTaskListRequest $request)
     {
-        $loggedInUser = Auth::user();
+        // $loggedInUser = Auth::user();
 
         $taskList = TaskList::create([
             'name' => $request->validated()['name'],
             'status' => $request->validated()['status'],
-            'user_id' => $loggedInUser->id,
+            'user_id' => $request->validated()['user_id'],
         ]);
 
         return response([
@@ -65,12 +61,16 @@ class TaskListController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function show(TaskList $taskList)
+    public function show(int $id)
     {
-        //
+        $tasksByList = Task::where('task_list_id', $id)->get();
+
+        return response([
+            'message' => 'success',
+            'result' => $tasksByList,
+        ], 200);
     }
 
     /**
@@ -117,7 +117,8 @@ class TaskListController extends Controller
      */
     public function destroy(int $id)
     {
-        $loggedInUser = Auth::user();
+        // $loggedInUser = Auth::user();
+        $loggedInUser = User::find(1);
 
         $taskList = TaskList::where('id', $id)->first();
         if (!$taskList) {

@@ -29,8 +29,8 @@ class UpdateTaskRequest extends FormRequest
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
             'due_date' => ['required', 'date'],
-            'status' => ['required', 'in:complete,pending'],
-            'task_list_id' => ['required', 'exists:task_lists,id'],
+            'status' => ['required', 'in:completed,pending'],
+            // 'task_list_id' => ['required', 'exists:task_lists,id'],
         ];
     }
 

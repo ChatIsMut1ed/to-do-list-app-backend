@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,5 +30,29 @@ class AuthController extends Controller
             ],
             400
         );
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        // $loggedInUser = Auth::user();
+        $loggedInUser = User::find(1);
+        // if ($loggedInUser->role !== 'admin') {
+        //     return response([
+        //         'status' => 'failed',
+        //         'result' => []
+        //     ], 403);
+        // }
+
+        $users = User::all();
+
+        return response([
+            'status' => 'success',
+            'result' => $users
+        ]);
     }
 }
