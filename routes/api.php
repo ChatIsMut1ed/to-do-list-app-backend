@@ -35,3 +35,4 @@ Route::delete('task-lists/{id}', [TaskListController::class, 'destroy']);
 
 //Users
 Route::get('users', [AuthController::class, 'index']);
+Route::put('users/{id}', [AuthController::class, 'update']);

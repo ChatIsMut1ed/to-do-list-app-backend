@@ -55,4 +55,42 @@ class AuthController extends Controller
             'result' => $users
         ]);
     }
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, int $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response(
+                [
+                    'status' => 'failed',
+                    'result' => []
+                ],
+                404
+            );
+        }
+        try {
+            $user->update([
+                'name' => $request->all()['name'],
+                'email' => $request->all()['email'],
+            ]);
+        } catch (\Throwable $th) {
+            return response([
+                'status' => 'faild',
+                'message' => 'Username Or Email Already Exists',
+                'result' => []
+            ], 400);
+        }
+
+        return response([
+            'status' => 'success',
+            'result' => $user
+        ]);
+    }
 }
