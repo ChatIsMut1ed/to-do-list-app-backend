@@ -36,3 +36,8 @@ Route::delete('task-lists/{id}', [TaskListController::class, 'destroy']);
 //Users
 Route::get('users', [AuthController::class, 'index']);
 Route::put('users/{id}', [AuthController::class, 'update']);
+
+Route::put('update-profile/{id}', [AuthController::class, 'updateProfile']);
+
+//auth
+Route::post('login', [AuthController::class, 'login']);
