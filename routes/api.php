@@ -41,3 +41,4 @@ Route::put('update-profile/{id}', [AuthController::class, 'updateProfile']);
 
 //auth
 Route::post('login', [AuthController::class, 'login']);
+Route::post('sign-up', [AuthController::class, 'signUp']);

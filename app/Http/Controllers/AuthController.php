@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -31,6 +32,47 @@ class AuthController extends Controller
             [
                 'status' => 'failed',
                 'result' => 'Wrong Password Or email'
+            ],
+            200
+        );
+    }
+
+
+    /**
+     * Auth
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function signUp(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|unique:users,name|string',
+                'email' => 'required|unique:users,email|string',
+                'password' => 'required|string',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status' => 'failed',
+                    'result'    => 'name or email already taken'
+                ],
+                200
+            );
+        }
+
+        $user = User::create([
+            'name' => $request->all()['name'],
+            'email' => $request->all()['email'],
+            'password' => Hash::make($request->all()['password'])
+        ]);
+
+        return  response(
+            [
+                'status' => 'success',
+                'result' => $user
             ],
             200
         );
