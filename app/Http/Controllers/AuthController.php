@@ -85,16 +85,15 @@ class AuthController extends Controller
      */
     public function index()
     {
-        // $loggedInUser = Auth::user();
-        $loggedInUser = User::find(1);
-        // if ($loggedInUser->role !== 'admin') {
-        //     return response([
-        //         'status' => 'failed',
-        //         'result' => []
-        //     ], 403);
-        // }
+        $loggedInUser = Auth::user();
+        if ($loggedInUser->role !== 'admin') {
+            return response([
+                'status' => 'failed',
+                'result' => []
+            ], 403);
+        }
 
-        $users = User::all();
+        $users = User::whereNot('id', $loggedInUser->id)->get();
 
         return response([
             'status' => 'success',

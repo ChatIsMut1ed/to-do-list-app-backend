@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\TaskList;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
@@ -181,6 +182,76 @@ class TaskController extends Controller
         return response([
             'status' => 'success',
             'result' => $id
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function dashboard()
+    {
+        $loggedInUser = Auth::user();
+
+        $thisWeekStart = Carbon::now()->startOfWeek();
+        $thisWeekEnd = Carbon::now()->endOfWeek();
+
+        if ($loggedInUser->role === 'client') {
+
+            $taksLists = TaskList::where('user_id', $loggedInUser->id)
+                ->get();
+            $validIds = [];
+            foreach ($taksLists as $taksList) {
+                $validIds[] = [
+                    $taksList->id
+                ];
+            }
+            $thisWeekTasks = Task::whereIn('task_list_id', $validIds)
+                ->whereBetween('due_date', [$thisWeekStart, $thisWeekEnd])
+                ->get();
+
+            $completedTasks = Task::whereIn('task_list_id', $validIds)
+                ->where('status', 'completed')->get();
+
+            $pendingTasks = Task::whereIn('task_list_id', $validIds)
+                ->where('status', 'pending')->get();
+
+            $history = Task::whereIn('task_list_id', $validIds)
+                ->orderBy('updated_at', 'desc')->take(10)->get();
+
+            return response([
+                'status' => 'success',
+                'result' => [
+                    'taksLists' => count($taksLists),
+                    'thisWeekTasks' => count($thisWeekTasks),
+                    'lists' => $history,
+                    'completedTasks' => count($completedTasks),
+                    'pendingTasks' => count($pendingTasks),
+                ]
+            ]);
+        }
+
+        $users = User::whereNot('id', $loggedInUser->id)->get();
+
+        $thisWeekUsers = User::whereBetween('created_at', [$thisWeekStart, $thisWeekEnd])
+            ->get();
+
+        $lists = TaskList::all();
+
+        $completedTasks = Task::where('status', 'completed')->get();
+
+        $pendingTasks = Task::where('status', 'pending')->get();
+
+        return response([
+            'status' => 'success',
+            'result' => [
+                'users' => count($users),
+                'thisWeekUsers' => count($thisWeekUsers),
+                'lists' => count($lists),
+                'completedTasks' => count($completedTasks),
+                'pendingTasks' => count($pendingTasks),
+            ]
         ]);
     }
 }
