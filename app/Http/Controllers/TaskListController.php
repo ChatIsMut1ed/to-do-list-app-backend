@@ -90,8 +90,16 @@ class TaskListController extends Controller
     {
         $loggedInUser = Auth::user();
 
+        $takslist = TaskList::where('user_id', $loggedInUser->id)
+            ->where('id', $id)
+            ->first();
+        if (!$takslist) {
+            return response([
+                'message' => 'failed',
+                'result' => [],
+            ], 200);
+        }
         $tasksByList = Task::where('task_list_id', $id)
-            ->where('user_id', $loggedInUser->id)
             ->get();
 
         return response([
