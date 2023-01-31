@@ -88,7 +88,11 @@ class TaskListController extends Controller
      */
     public function show(int $id)
     {
-        $tasksByList = Task::where('task_list_id', $id)->get();
+        $loggedInUser = Auth::user();
+
+        $tasksByList = Task::where('task_list_id', $id)
+            ->where('user_id', $loggedInUser->id)
+            ->get();
 
         return response([
             'message' => 'success',
