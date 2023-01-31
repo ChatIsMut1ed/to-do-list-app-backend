@@ -170,8 +170,10 @@ class TaskController extends Controller
                 404
             );
         }
-        $taskList = TaskList::where('user_id', $loggedInUser->id)->first();
-        if ($task->task_list_id !== $taskList->id) {
+        $taskList = TaskList::where('user_id', $loggedInUser->id)
+            ->where('id', $task->task_list_id)
+            ->first();
+        if (!$taskList) {
             return response(
                 [
                     'status' => 'Error',
