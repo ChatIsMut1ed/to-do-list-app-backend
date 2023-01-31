@@ -19,14 +19,18 @@ class TaskController extends Controller
      */
     public function index()
     {
-        // $loggedInUser = Auth::user();
-        $tasks = Task::all();
+        $loggedInUser = Auth::user();
+        // $tasks = Task::all();
+        $taksLists = TaskList::where('user_id', $loggedInUser->id)
+            ->get();
+        $validIds = [];
+        foreach ($taksLists as $taksList) {
+            $validIds[] = [
+                $taksList->id
+            ];
+        }
+        $tasks = Task::whereIn('task_list_id', $validIds)->get();
 
-        // if ($loggedInUser->role === 'admin') {
-        //     $tasks = Task::all()->paginate(10);
-        // } else {
-        //     $tasks = Task::where('user_id', $loggedInUser->id)->get();
-        // }
 
         return response([
             'status' => 'success',
@@ -152,8 +156,8 @@ class TaskController extends Controller
      */
     public function destroy(int $id)
     {
-        // $loggedInUser = Auth::user();
-        $loggedInUser = User::find(1);
+        $loggedInUser = Auth::user();
+        // $loggedInUser = User::find(1);
 
         $task = Task::where('id', $id)->first();
 

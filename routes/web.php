@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'api'], function () {
 
     //Tasks List
     Route::get('task-lists', [TaskListController::class, 'index']);
+    Route::get('task-lists/{id}', [TaskListController::class, 'getListById']);
     Route::post('task-lists', [TaskListController::class, 'store']);
     Route::get('task-lists/{id}/tasks', [TaskListController::class, 'show']);
     Route::delete('task-lists/{id}', [TaskListController::class, 'destroy']);

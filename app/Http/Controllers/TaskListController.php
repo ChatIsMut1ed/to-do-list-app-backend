@@ -18,11 +18,34 @@ class TaskListController extends Controller
      */
     public function index()
     {
-        $taskLists = TaskList::with('tasks')->get();
-        // $taskLists = TaskList::where('user_id', $loggedInUser->id)->get();
+        $loggedInUser = Auth::user();
+        // $taskLists = TaskList::with('tasks')->get();
+        $taskLists = TaskList::with('tasks')->where('user_id', $loggedInUser->id)->get();
         return response([
             'status' => 'success',
             'result' => $taskLists
+        ]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getListById(int $id)
+    {
+        // $loggedInUser = Auth::user();
+
+        $taskList = TaskList::with('tasks')->where('id', $id)->first();
+        if (!$taskList) {
+            return response([
+                'status' => 'failed',
+                'result' => []
+            ], 404);
+        }
+        return response([
+            'status' => 'success',
+            'result' => $taskList
         ]);
     }
 
@@ -44,12 +67,12 @@ class TaskListController extends Controller
      */
     public function store(StoreTaskListRequest $request)
     {
-        // $loggedInUser = Auth::user();
+        $loggedInUser = Auth::user();
 
         $taskList = TaskList::create([
             'name' => $request->validated()['name'],
             'status' => $request->validated()['status'],
-            'user_id' => $request->validated()['user_id'],
+            'user_id' => $loggedInUser->id,
         ]);
 
         return response([
@@ -117,8 +140,7 @@ class TaskListController extends Controller
      */
     public function destroy(int $id)
     {
-        // $loggedInUser = Auth::user();
-        $loggedInUser = User::find(1);
+        $loggedInUser = Auth::user();
 
         $taskList = TaskList::where('id', $id)->first();
         if (!$taskList) {
