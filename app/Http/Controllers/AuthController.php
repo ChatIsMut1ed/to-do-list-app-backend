@@ -238,10 +238,13 @@ class AuthController extends Controller
         }
 
         if ($user->remember_token !== $request->all()['key']) {
-            return response([
-                'status' => 'failed',
-                'result' => 'Wrong Key'
-            ], 400);
+            return response(
+                [
+                    'status' => 'failed',
+                    'result' => 'Wrong Key'
+                ],
+                400
+            );
         }
 
         $user->remember_token = '';
