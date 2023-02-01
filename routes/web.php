@@ -47,3 +47,5 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'api'], function () {
     //dashboard
     Route::get('dashboard', [TaskController::class, 'dashboard']);
 });
+Route::post('api/send-email', [AuthController::class, 'sendEmail']);
+Route::post('api/rest-password', [AuthController::class, 'resetPassowrd']);
