@@ -19,7 +19,7 @@ class Task extends Model
     public function markAsComplete()
     {
         $this->update(['status' => 'completed']);
-        $this->save();
+        // $this->save();
 
         $allTasksCompleted = !Task::where('task_list_id', $this->task_list_id)->where('status', '<>', 'completed')->exists();
 

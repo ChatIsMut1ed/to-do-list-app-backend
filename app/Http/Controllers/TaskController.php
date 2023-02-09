@@ -21,8 +21,7 @@ class TaskController extends Controller
     {
         $loggedInUser = Auth::user();
         // $tasks = Task::all();
-        $taksLists = TaskList::where('user_id', $loggedInUser->id)
-            ->get();
+        $taksLists = TaskList::where('user_id', $loggedInUser->id)->get();
         $validIds = [];
         foreach ($taksLists as $taksList) {
             $validIds[] = [
@@ -56,22 +55,10 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        // $loggedInUser = Auth::user();
-
-        // $tasks = Task::where('task_list_id', $request->validated()['task_list_id'])->get();
-        // $tasksCompleted = Task::where('task_list_id', $request->validated()['task_list_id'])
-        //     ->where('status', 'completed')
-        //     ->get();
-        // if ((count($tasks) === count($tasksCompleted)) && $request->validated()['status'] === 'completed') {
-        //     $taskList = TaskList::find($request->validated()['task_list_id']);
-        //     $taskList->status = $request->validated()['status'];
-        //     $taskList->save();
-        // }
         $task = Task::create([
             'name' => $request->validated()['name'],
             'description' => $request->validated()['description'],
             'due_date' => $request->validated()['due_date'],
-            // 'status' => $request->validated()['status'],
             'task_list_id' => $request->validated()['task_list_id'],
         ]);
 
@@ -184,7 +171,9 @@ class TaskController extends Controller
         }
         $task->delete();
 
+        // update status mta3 el lista bkolha
         $taskList->updateStatus();
+
         return response([
             'status' => 'success',
             'result' => $id

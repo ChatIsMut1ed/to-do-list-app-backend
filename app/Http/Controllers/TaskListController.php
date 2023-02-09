@@ -132,6 +132,16 @@ class TaskListController extends Controller
 
         $taskList = TaskList::where('id', $id)->first();
 
+        if (!$taskList) {
+            return response(
+                [
+                    'status' => 'failed',
+                    'result' => []
+                ],
+                404
+            );
+        }
+
         $taskList->update([
             'name' => $request->validated()['name'],
             'status' => $request->validated()['status'],

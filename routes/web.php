@@ -23,9 +23,11 @@ use Illuminate\Support\Facades\Route;
 //auth
 Route::post('api/login', [AuthController::class, 'login']);
 Route::post('api/sign-up', [AuthController::class, 'signUp']);
+// forget password
+Route::post('api/send-email', [AuthController::class, 'sendEmail']);
+Route::post('api/rest-password', [AuthController::class, 'resetPassowrd']);
 
 Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'api'], function () {
-
     //tasks
     Route::get('tasks', [TaskController::class, 'index']);
     Route::post('tasks', [TaskController::class, 'store']);
@@ -47,5 +49,3 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'api'], function () {
     //dashboard
     Route::get('dashboard', [TaskController::class, 'dashboard']);
 });
-Route::post('api/send-email', [AuthController::class, 'sendEmail']);
-Route::post('api/rest-password', [AuthController::class, 'resetPassowrd']);
